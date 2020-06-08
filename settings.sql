@@ -1,0 +1,4 @@
+CREATE DATABASE zoodoc;
+CREATE USER zoodocuser
+WITH PASSWORD 'zoodoc';
+GRANT ALL PRIVILEGES ON DATABASE zoodoc TO zoodocuser;
