@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework import filters
 from .serializers import DoctorSerializer, ReviewSerializer
 from .models import Doctor, Review
 # Create your views here.
@@ -8,6 +9,8 @@ from .models import Doctor, Review
 class DoctorList(generics.ListCreateAPIView):
     queryset = Doctor.objects.all()
     serializer_class = DoctorSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['zip_code', 'specialization','city']
 
 
 class DoctorDetail(generics.RetrieveUpdateDestroyAPIView):
