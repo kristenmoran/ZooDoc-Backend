@@ -10,9 +10,13 @@ class DoctorSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True
     )
 
+    review_url = serializers.ModelSerializer.serializer_url_field(
+        view_name='review_detail'
+    )
+
     class Meta:
         model = Doctor
-        fields = ('id', 'first_name', 'last_name', 'gender',
+        fields = ('id', 'review_url', 'first_name', 'last_name', 'gender',
                   'image_url', 'specialization', 'office_name', 'website', 'about', 'street_address', 'city', 'state', 'zip_code', 'phone_number', 'reviews')
 
 
@@ -23,7 +27,12 @@ class ReviewSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True
     )
 
+    doctor_id = serializers.PrimaryKeyRelatedField(
+        queryset=Doctor.objects.all(),
+        source='doctor'
+    )
+
     class Meta:
         model = Review
-        fields = ('name', 'description', 'overall_rating',
+        fields = ('id', 'doctor_id', 'name', 'description', 'overall_rating',
                   'bed_side_rating', 'wait_time_rating', 'created_at', 'doctor',)
