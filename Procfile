@@ -1,0 +1,1 @@
+web: gunicorn zoodoc_django.wsgi

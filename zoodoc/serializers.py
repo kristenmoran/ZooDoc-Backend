@@ -10,13 +10,9 @@ class DoctorSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True
     )
 
-    review_url = serializers.ModelSerializer.serializer_url_field(
-        view_name='review_detail'
-    )
-
     class Meta:
         model = Doctor
-        fields = ('id', 'review_url', 'first_name', 'last_name', 'gender',
+        fields = ('id', 'first_name', 'last_name', 'gender',
                   'image_url', 'specialization', 'office_name', 'website', 'about', 'street_address', 'city', 'state', 'zip_code', 'phone_number', 'reviews')
 
 
