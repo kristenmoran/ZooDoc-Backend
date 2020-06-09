@@ -28,18 +28,20 @@ class Doctor(models.Model):
 class Review(models.Model):
 
     RATING_CHOICES = (
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-        ('5', '5'),
+        ('1', '1 Star'),
+        ('2', '2 Stars'),
+        ('3', '3 Stars'),
+        ('4', '4 Stars'),
+        ('5', '5 Stars'),
     )
     name = models.CharField(max_length=50)
     description = models.TextField()
-    overall_rating = models.CharField(max_length=1, choices=RATING_CHOICES)
-    bed_side_rating = models.CharField(max_length=1, choices=RATING_CHOICES)
-    wait_time_rating = models.CharField(max_length=1, choices=RATING_CHOICES)
-    created_at = models.DateTimeField()
+    overall_rating = models.CharField(max_length=10, choices=RATING_CHOICES)
+    bed_side_rating = models.CharField(max_length=10, choices=RATING_CHOICES)
+    wait_time_rating = models.CharField(max_length=10, choices=RATING_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
     doctor = models.ForeignKey(
         Doctor, on_delete=models.CASCADE, related_name='reviews')
 
