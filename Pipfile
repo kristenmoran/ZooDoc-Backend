@@ -13,6 +13,7 @@ django-cors-headers = "*"
 dj-database-url = "*"
 gunicorn = "*"
 whitenoise = "*"
+djangorestframework-jwt = "*"
 
 [requires]
 python_version = "3.8"

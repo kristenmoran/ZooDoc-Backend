@@ -25,6 +25,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ['MODE'] == 'dev' else False
+# DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'zoodoc',
     'rest_framework',
     'corsheaders',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -84,13 +86,26 @@ DATABASES = {
     'default': dj_database_url.config(conn_max_age=600)
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'zoodoc',
+#         'USER': 'zoodocuser',
+#         'PASSWORD': 'zoodoc',
+#         'HOST': 'localhost'
+#     }
+# }
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.BasePermission'
     ]
 }
+
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

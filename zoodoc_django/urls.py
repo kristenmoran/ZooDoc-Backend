@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('zoodoc.urls')),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/', include('users.urls', namespace='users')),
 ]
