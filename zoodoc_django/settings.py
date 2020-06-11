@@ -24,8 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True if os.environ['MODE'] == 'dev' else False
-DEBUG = True
+DEBUG = True if os.environ['MODE'] == 'dev' else False
+# DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -82,19 +82,19 @@ WSGI_APPLICATION = 'zoodoc_django.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': dj_database_url.config(conn_max_age=600)
-# }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'zoodoc',
-        'USER': 'zoodocuser',
-        'PASSWORD': 'zoodoc',
-        'HOST': 'localhost'
-    }
+    'default': dj_database_url.config(conn_max_age=600)
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'zoodoc',
+#         'USER': 'zoodocuser',
+#         'PASSWORD': 'zoodoc',
+#         'HOST': 'localhost'
+#     }
+# }
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
