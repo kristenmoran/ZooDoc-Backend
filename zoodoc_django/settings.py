@@ -24,7 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ['MODE'] == 'dev' else False
+# DEBUG = True if os.environ['MODE'] == 'dev' else False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'zoodoc',
     'rest_framework',
     'corsheaders',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -80,8 +82,18 @@ WSGI_APPLICATION = 'zoodoc_django.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 
+# DATABASES = {
+#     'default': dj_database_url.config(conn_max_age=600)
+# }
+
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600)
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'zoodoc',
+        'USER': 'zoodocuser',
+        'PASSWORD': 'zoodoc',
+        'HOST': 'localhost'
+    }
 }
 
 REST_FRAMEWORK = {
@@ -91,6 +103,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
