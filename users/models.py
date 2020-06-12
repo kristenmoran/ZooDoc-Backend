@@ -1,123 +1,83 @@
-from datetime import datetime, timedelta
-from django.db import models
-
-# Create your models here.
-
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.conf import settings
-from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin
-)
-import jwt
+from django.db import models
 
 
 class UserManager(BaseUserManager):
-    """
-    Django requires that custom users define their own Manager class. By
-    inheriting from `BaseUserManager`, we get a lot of the same code used by
-    Django to create a `User`. 
-    All we have to do is override the `create_user` function which we will use
-    to create `User` objects.
-    """
+    """Manager for user profiles"""
 
-    def create_user(self, username, email, password=None):
-        """Create and return a `User` with an email, username and password."""
-        if username is None:
-            raise TypeError('Users must have a username.')
-        if email is None:
-            raise TypeError('Users must have an email address.')
-        user = self.model(username=username, email=self.normalize_email(email))
+    # The create_user method is passed:
+    # self:      All methods in Python receive the class as the first argument
+    # email:     Because we want to be able to log users in with email
+    #            instead of username (Django's default behavior)
+    # password:  The password has a default of None for validation purposes.
+    #            This ensures the proper error is thrown if a password is
+    #            not provided.
+    # **extra_fields:  Just in case there are extra arguments passed.
+    def create_user(self, email, name, password=None, **extra_fields):
+        """Create a new user profile"""
+        # Add a custom validation error
+        if not email:
+            raise ValueError('User must have an email address')
+
+        # Create a user from the UserModel
+        # Use the normalize_email method from the BaseUserManager to
+        # normalize the domain of the email
+        # We'll also unwind the extra fields.  Remember that two asterisk (**)
+        # in Python refers to the extra keyword arguments that are passed into
+        # a function (meaning these are key=value pairs).
+        user = self.model(email=self.normalize_email(
+            email), name=name, **extra_fields)
+
+        # Use the set_password method to hash the password
         user.set_password(password)
+        # Call save to save the user to the database
         user.save()
+
+        # Always return the user!
         return user
 
-    def create_superuser(self, username, email, password):
-        """
-        Create and return a `User` with superuser (admin) permissions.
-        """
-        if password is None:
-            raise TypeError('Superusers must have a password.')
-        user = self.create_user(username, email, password)
+    def create_superuser(self, email, name, password):
+        """Create and save a new superuser with given details"""
+
+        # Use the custom create_user method above to create
+        # the user.
+        user = self.create_user(email, name, password)
+
+        # Add the required is_superuser and is_staff properties
+        # which must be set to True for superusers
         user.is_superuser = True
         user.is_staff = True
+        # Save the user to the database with the new properties
         user.save()
+
+        # Always return the user!
         return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    # Each `User` needs a human-readable unique identifier that we can use to
-    # represent the `User` in the UI. We want to index this column in the
-    # database to improve lookup performance.
-    username = models.CharField(db_index=True, max_length=255, unique=True)
-    # We also need a way to contact the user and a way for the user to identify
-    # themselves when logging in. Since we need an email address for contacting
-    # the user anyways, we will also use the email for logging in because it is
-    # the most common form of login credential at the time of writing.
-    email = models.EmailField(db_index=True, unique=True)
-    # When a user no longer wishes to use our platform, they may try to delete
-    # their account. That's a problem for us because the data we collect is
-    # valuable to us and we don't want to delete it. We
-    # will simply offer users a way to deactivate their account instead of
-    # letting them delete it. That way they won't show up on the site anymore,
-    # but we can still analyze the data.
+    """Database model for users"""
+    # As with any Django models, we need to define the fields
+    # for the model with the type and options:
+    email = models.EmailField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
-    # The `is_staff` flag is expected by Django to determine who can and cannot
-    # log into the Django admin site. For most users this flag will always be
-    # false.
     is_staff = models.BooleanField(default=False)
-    # A timestamp representing when this object was created.
-    created_at = models.DateTimeField(auto_now_add=True)
-    # A timestamp reprensenting when this object was last updated.
-    updated_at = models.DateTimeField(auto_now=True)
-    # More fields required by Django when specifying a custom user model.
-    # The `USERNAME_FIELD` property tells us which field we will use to log in.
-    # In this case we want it to be the email field.
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-    # Tells Django that the UserManager class defined above should manage
-    # objects of this type.
+
+    # Any time we call User.objects (such as in objects.all() or objects.filter())
+    # make sure to use the custom user manager we created.
     objects = UserManager()
 
+    # Tell Django to use the email field as the unique identifier for the
+    # user account instead of its built in behavior of using the username.
+    USERNAME_FIELD = 'email'
+    # This doesn't mean the field is required (that's defined above in the field options)
+    # This refers to the fields that are prompted for when creating a superuser.
+    # https://docs.djangoproject.com/en/3.0/topics/auth/customizing/#django.contrib.auth.models.CustomUser.REQUIRED_FIELDS
+    REQUIRED_FIELDS = ['name']
+
+    # Standard Python: We'll create a string representation so when
+    # the class is output we'll get something meaningful.
     def __str__(self):
-        """
-        Returns a string representation of this `User`.
-        This string is used when a `User` is printed in the console.
-        """
+        """Return string representation of the user"""
         return self.email
-
-    @property
-    def token(self):
-        """
-        Allows us to get a user's token by calling `user.token` instead of
-        `user.generate_jwt_token().
-        The `@property` decorator above makes this possible. `token` is called
-        a "dynamic property".
-        """
-        return self._generate_jwt_token()
-
-    def get_full_name(self):
-        """
-        This method is required by Django for things like handling emails.
-        Typically this would be the user's first and last name. Since we do
-        not store the user's real name, we return their username instead.
-        """
-        return self.username
-
-    def get_short_name(self):
-        """
-        This method is required by Django for things like handling emails.
-        Typically, this would be the user's first name. Since we do not store
-        the user's real name, we return their username instead.
-        """
-        return self.username
-
-    def _generate_jwt_token(self):
-        """
-        Generates a JSON Web Token that stores this user's ID and has an expiry
-        date set to 60 days into the future.
-        """
-        dt = datetime.now() + timedelta(days=60)
-        token = jwt.encode({
-            'id': self.pk,
-            'exp': datetime.now() + timedelta(days=60)
-        }, settings.SECRET_KEY, algorithm='HS256')
-        return token.decode('utf-8')
