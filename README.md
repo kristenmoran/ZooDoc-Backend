@@ -13,9 +13,9 @@ Repo Links:
 The final result can be viewed here: [ZooDoc](https://zoodoc.herokuapp.com/)
 
 Team Members:
-Brian Guayante
-Yiling (Carol) Cui
-Foolan Bhosale
+Brian Guayante,
+Yiling (Carol) Cui,
+Foolan Bhosale,
 Kristen Moran
 
 ## User Stories
