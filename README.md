@@ -82,8 +82,10 @@ class Review(models.Model):
 
 ## ZooDoc JSON Data
 
+### Doctors
 ![Doctors](project-planning/Doctors.png)
 
+### Reviews
 ![Reviews](project-planning/Reviews.png)
 
 ## ZooDoc Req-Res Cycle
