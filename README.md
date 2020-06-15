@@ -80,6 +80,12 @@ class Review(models.Model):
 
 ```
 
+## ZooDoc JSON Data
+
+![Doctors](project-planning/Doctors.png)
+
+![Reviews](project-planning/Reviews.png)
+
 ## ZooDoc Req-Res Cycle
 ![Req-Res Cycle](project-planning/Djangobackend.png)
 
